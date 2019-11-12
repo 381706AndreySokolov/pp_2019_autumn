@@ -24,7 +24,7 @@ TEST(Dining_Philosophers_MPI, Sum_Mode_with_3_elements) {
       gold_result += proc + (proc + 1) + (proc + 2);
     }
   } else {
-    std::array<int, 3U> mas{ rank, rank + 1, rank + 2 };
+    std::array<int, 3U> mas{ { rank, rank + 1, rank + 2 } };
 
     startPilosopher(&local_result, rank, mas.data(), comm_size, mode, size);
   }
@@ -33,8 +33,9 @@ TEST(Dining_Philosophers_MPI, Sum_Mode_with_3_elements) {
 
   MPI_Reduce(&local_result, &global_result, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-  if (rank == 0)
+  if (rank == 0) {
     ASSERT_EQ(global_result, gold_result);
+  }
 }
 
 TEST(Dining_Philosophers_MPI, Sum_Mode_with_10_elements) {
@@ -57,8 +58,8 @@ TEST(Dining_Philosophers_MPI, Sum_Mode_with_10_elements) {
                      (proc + 5) + (proc + 6) + (proc + 7) + (proc + 8) + (proc + 9);
     }
   } else {
-    std::array<int, 10U> mas{ rank, rank + 1, rank + 2, rank + 3, rank + 4,
-                            rank + 5, rank + 6, rank + 7, rank + 8, rank + 9 };
+    std::array<int, 10U> mas{ { rank, rank + 1, rank + 2, rank + 3, rank + 4,
+                                rank + 5, rank + 6, rank + 7, rank + 8, rank + 9 } };
 
     startPilosopher(&local_result, rank, mas.data(), comm_size, mode, size);
   }
@@ -67,8 +68,9 @@ TEST(Dining_Philosophers_MPI, Sum_Mode_with_10_elements) {
 
   MPI_Reduce(&local_result, &global_result, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-  if (rank == 0)
+  if (rank == 0) {
     ASSERT_EQ(global_result, gold_result);
+  }
 }
 
 TEST(Dining_Philosophers_MPI, Multiplication_Mode_with_3_elements) {
@@ -90,7 +92,7 @@ TEST(Dining_Philosophers_MPI, Multiplication_Mode_with_3_elements) {
       gold_result += proc * (proc + 1) * (proc + 2);
     }
   } else {
-    std::array<int, 3U> mas{ rank, rank + 1, rank + 2 };
+    std::array<int, 3U> mas{ { rank, rank + 1, rank + 2 } };
 
     startPilosopher(&local_result, rank, mas.data(), comm_size, mode, size);
   }
@@ -125,8 +127,8 @@ TEST(Dining_Philosophers_MPI, Multiplication_Mode_with_10_elements) {
                      (proc + 5) * (proc + 6) * (proc + 7) * (proc + 8)  * (proc + 9);
     }
   } else {
-    std::array<int, 10U> mas{ rank, rank + 1, rank + 2, rank + 3, rank + 4,
-                            rank + 5, rank + 6, rank + 7, rank + 8, rank + 9 };
+    std::array<int, 10U> mas{ { rank, rank + 1, rank + 2, rank + 3, rank + 4,
+                                rank + 5, rank + 6, rank + 7, rank + 8, rank + 9 } };
 
     startPilosopher(&local_result, rank, mas.data(), comm_size, mode, size);
   }
@@ -160,7 +162,7 @@ TEST(Dining_Philosophers_MPI, Default_Mode_with_5_elements) {
       gold_result += proc + 4;
     }
   } else {
-    std::array<int, 5U> mas{ rank, rank + 1, rank + 2, rank + 3, rank + 4 };
+    std::array<int, 5U> mas{ { rank, rank + 1, rank + 2, rank + 3, rank + 4 } };
 
     startPilosopher(&local_result, rank, mas.data(), comm_size, mode, size);
   }
@@ -169,8 +171,9 @@ TEST(Dining_Philosophers_MPI, Default_Mode_with_5_elements) {
 
   MPI_Reduce(&local_result, &global_result, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-  if (rank == 0)
+  if (rank == 0) {
     ASSERT_EQ(global_result, gold_result);
+  }
 }
 
 int main(int argc, char** argv) {
