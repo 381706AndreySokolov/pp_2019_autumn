@@ -64,16 +64,14 @@ void startTable(int comm_size, int size) {
       fork[philosopher % (comm_size - 1)] = true;
       fork[philosopher - 1] = true;
 
-      if (!queue.empty()) {
-        for (std::list<int>::iterator it = queue.begin(); it != queue.end(); it++) {
-          philosopher = *it;
+      for (int i = 0; i < queue.size(); ++i) {
+        philosopher = queue.front();
+        if (fork[philosopher % (comm_size - 1)] == true && fork[philosopher - 1] == true) {
+          fork[philosopher % (comm_size - 1)] = false;
+          fork[philosopher - 1] = false;
+          MPI_Send(out_buffer, 1, MPI_INT, philosopher, FORK_RESPONSE, MPI_COMM_WORLD);
 
-          if (fork[philosopher % (comm_size - 1)] == true && fork[philosopher - 1] == true) {
-            fork[philosopher % (comm_size - 1)] = false;
-            fork[philosopher - 1] = false;
-            MPI_Send(out_buffer, 1, MPI_INT, philosopher, FORK_RESPONSE, MPI_COMM_WORLD);
-            it = queue.erase(it);
-          }
+          queue.remove(philosopher);
         }
       }
     }
