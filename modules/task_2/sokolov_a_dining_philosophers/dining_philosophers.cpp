@@ -64,7 +64,7 @@ void startTable(int comm_size, int size) {
       fork[philosopher % (comm_size - 1)] = true;
       fork[philosopher - 1] = true;
 
-      for (int i = 0; i < queue.size(); ++i) {
+      for (size_t i = 0U; i < queue.size(); ++i) {
         philosopher = queue.front();
         if (fork[philosopher % (comm_size - 1)] == true && fork[philosopher - 1] == true) {
           fork[philosopher % (comm_size - 1)] = false;
