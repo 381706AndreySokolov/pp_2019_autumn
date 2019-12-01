@@ -4,11 +4,12 @@
 #include <random>
 #include <numeric>
 #include <algorithm>
+#include <vector>
 #include <ctime>
 #include <list>
 #include "../../../modules/task_3/sokolov_a_horizontal_gauss/horizontal_gauss.h"
 
-std::vector<unsigned char> getRandomImage(size_t _cols, size_t _rows) {
+std::vector<unsigned char> getRandomImage(int _cols, int _rows) {
   std::mt19937 gen;
   gen.seed(static_cast<unsigned int>(time(0)));
   std::vector<unsigned char> image(_cols * _rows);
@@ -44,9 +45,10 @@ unsigned char changePixel(std::vector<unsigned char> source, int x, int y, int r
 
 std::vector<unsigned char> filterImageSequential(std::vector<unsigned char> source, int rows, int cols) {
   std::vector<unsigned char> result(cols * rows);
-  for (int i = 0; i < cols; ++i)
-    for (int j = 0; j < rows; ++j)
+  for (int i = 0; i < rows; ++i)
+    for (int j = 0; j < cols; ++j) {
       result[i * cols + j] = changePixel(source, i, j, rows, cols);
+    }
   return result;
 }
 
@@ -63,14 +65,17 @@ std::vector<unsigned char> filterImageParallel(std::vector<unsigned char> source
     return filterImageSequential(source, rows, cols);
   }
 
-  std::cout << "{" << rank << "}" << "ERROR" << std::endl;
-  
-  const int interval      = rows / comm_size; // how many lines will send to processes != 0  5 / 2 = 2 // 5 / 3 = 1
-  const int last_interval = rows % comm_size; // residue to 0'th process                     5 % 2 = 1 // 5 % 3 = 2 
+  const int interval      = rows / comm_size;  // how many lines will send to processes != 0
+  const int last_interval = rows % comm_size;  // residue to 0'th process
 
   std::vector<std::vector<unsigned char>> recvResult(comm_size - 1);
 
   if (rank == 0) {
+#ifdef DEBUG
+    std::cout << "Interval: " << interval << std::endl;
+    std::cout << "Last Interval: " << last_interval << std::endl;
+#endif  // DEBUG
+
     for (int i = 0; i < comm_size - 1; ++i) {
       recvResult[i].resize(interval * cols, 0);
     }
@@ -80,78 +85,85 @@ std::vector<unsigned char> filterImageParallel(std::vector<unsigned char> source
   std::vector<unsigned char> localResult(interval * cols);
 
   if (rank == 0) {
-    std::cout << "Source:" << std::endl;
-    for (int i = 0; i < source.size(); ++i)
-    {
+#ifdef DEBUG
+    std::cout << "Source: " << "Size: " << source.size() << std::endl;
+    for (int i = 0; i < source.size(); ++i) {
       std::cout << (unsigned int)source[i] << " ";
+      if ((i + 1) % cols == 0) std::cout << std::endl;
     }
     std::cout << std::endl;
+#endif  // DEBUG
 
-    // sending image rows to others process
     for (int proc = 1; proc < comm_size; proc++) {
       int startAdress = (proc * interval * cols) + (last_interval - 1) * cols;
       int countSend;
 
       if (proc != (comm_size - 1)) {
         countSend = interval * cols + 2 * cols;
-      }
-      else {
+      } else {
         countSend = interval * cols + cols;
       }
       MPI_Send(&source[0] + startAdress, countSend, MPI_UNSIGNED_CHAR, proc, 0, MPI_COMM_WORLD);
     }
 
-  } else if (rank != 0){  // receive subvectors
-    if (rank != comm_size - 1)
+  } else if (rank != 0) {
+    if (rank != comm_size - 1) {
       MPI_Recv(&localImage[0], (interval + 2) * cols + 2, MPI_UNSIGNED_CHAR, 0, 0, MPI_COMM_WORLD, &status);
-    else {
-      localImage.resize(interval * cols + cols);
+    } else {
+      localImage.resize((interval + 1) * cols);
       MPI_Recv(&localImage[0], (interval + 1) * cols, MPI_UNSIGNED_CHAR, 0, 0, MPI_COMM_WORLD, &status);
     }
-    std::cout << "{" << rank << "}" << "Local Image" << std::endl;
+
+#ifdef DEBUG
+    std::cout << "{" << rank << "}" << "Local Image" << " | Size: " << localImage.size() << std::endl;
     for (int i = 0; i < localImage.size(); ++i) {
       std::cout << (unsigned int)localImage[i] << " ";
+      if ((i + 1) % cols == 0) std::cout << std::endl;
     }
     std::cout << std::endl;
+#endif  // DEBUG
   }
-
-  std::vector<unsigned char> localResultImage(interval * cols);
 
   if (rank == comm_size - 1) {
     for (int i = 1; i < interval + 1; ++i)
       for (int j = 0; j < cols; ++j)
         localResult[(i - 1) * cols + j] = changePixel(localImage, i, j, interval + 1, cols);
-  }
-  else if (rank != 0) {
+
+#ifdef DEBUG
+    std::cout << "{" << rank << "}" << "Local result" << " | Size: " << localResult.size() << std::endl;
+    for (int i = 0; i < localResult.size(); ++i) {
+      std::cout << (unsigned int)localResult[i] << " ";
+      if ((i + 1) % cols == 0) std::cout << std::endl;
+    }
+    std::cout << std::endl;
+#endif  // DEBUG
+  } else if (rank != 0) {
     for (int i = 1; i < interval + 1; ++i)
       for (int j = 0; j < cols; ++j)
         localResult[(i - 1) * cols + j] = changePixel(localImage, i, j, interval + 2, cols);
+
+#ifdef DEBUG
+    std::cout << "{" << rank << "}" << "Local result" << " | Size: " << localResult.size() << std::endl;
+    for (int i = 0; i < localResult.size(); ++i) {
+      std::cout << (unsigned int)localResult[i] << " ";
+      if ((i + 1) % cols == 0) std::cout << std::endl;
+    }
+    std::cout << std::endl;
+#endif  // DEBUG
   } else {
     for (int i = 0; i < interval + last_interval; ++i)
       for (int j = 0; j < cols; ++j)
-        globalResult[i * cols + j] = changePixel(source, i, j, cols, rows);
+        globalResult[i * cols + j] = changePixel(source, i, j, rows, cols);
   }
-
-  std::cout << "{" << rank << "}" << "Local result" << std::endl;
-  std::cout << "Size: " << localResult.size() << std::endl;
-  for (int i = 0; i < localResult.size(); ++i) {
-    std::cout << (unsigned int)localResult[i] << " ";
-  }
-  std::cout << std::endl;
 
   if (rank != 0) {
     MPI_Send(&localResult[0], interval * cols, MPI_UNSIGNED_CHAR, 0, 0, MPI_COMM_WORLD);
-  } else if (rank == 0) {
-    //for (int i = 0; i < (interval + last_interval) * cols; ++i)
-    //  globalResult[i] = localResult[i];
-    for (int proc = 1; proc < comm_size; ++proc)
-      //MPI_Recv(&recvResult[proc - 1], interval * cols, MPI_UNSIGNED_CHAR, proc, 0, MPI_COMM_WORLD, &status);
-      MPI_Recv(&globalResult[0] + ((interval + last_interval) * cols) + ((proc - 1) * interval * cols), interval * cols, MPI_UNSIGNED_CHAR, proc, 0, MPI_COMM_WORLD, &status);
-    //for (int i = 0; i < comm_size - 1; ++i) {
-    //  globalResult.insert(globalResult.begin() + (((interval + last_interval) * cols) + (i * interval * cols)), recvResult[i].begin(), recvResult[i].end());
-    //}
+  } else {
+    for (int proc = 1; proc < comm_size; ++proc) {
+      int start = ((interval + last_interval) * cols) + ((proc - 1) * interval * cols);
+      MPI_Recv(&globalResult[0] + start, interval * cols, MPI_UNSIGNED_CHAR, proc, 0, MPI_COMM_WORLD, &status);
+    }
   }
-
 
   return globalResult;
 }
