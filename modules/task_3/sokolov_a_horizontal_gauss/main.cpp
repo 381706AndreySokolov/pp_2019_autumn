@@ -13,23 +13,21 @@ TEST(Horizontal_Gauss_MPI, Test_Image_9_rows_9_cols) {
   constexpr int rows{ 9 };
   constexpr int cols{ 9 };
 
-  std::vector<unsigned char> src;
+  std::vector<unsigned char> src = getRandomImage(cols, rows);;
   std::vector<unsigned char> resPar;
   std::vector<unsigned char> resSeq;
-
-  if (rank == 0) {
-    src = getRandomImage(cols, rows);
-  }
 
   resPar = filterImageParallel(src, cols, rows);
 
   if (rank == 0) {
     resSeq = filterImageSequential(src, cols, rows);
 #ifdef DEBUG
+    std::cout << "Parallel result:" << std::endl;
     for (int i = 0; i < cols * rows; ++i) {
       std::cout << (unsigned int)resPar[i] << " ";
     }
     std::cout << std::endl;
+    std::cout << "Sequential result:" << std::endl;
     for (int i = 0; i < cols* rows; ++i) {
       std::cout << (unsigned int)resSeq[i] << " ";
     }
@@ -45,23 +43,21 @@ TEST(Horizontal_Gauss_MPI, Test_Image_27rows_27_cols) {
   constexpr int rows{ 27 };
   constexpr int cols{ 27 };
 
-  std::vector<unsigned char> src;
+  std::vector<unsigned char> src = getRandomImage(cols, rows);;
   std::vector<unsigned char> resPar;
   std::vector<unsigned char> resSeq;
-
-  if (rank == 0) {
-    src = getRandomImage(cols, rows);
-  }
 
   resPar = filterImageParallel(src, cols, rows);
 
   if (rank == 0) {
     resSeq = filterImageSequential(src, cols, rows);
 #ifdef DEBUG
+    std::cout << "Parallel result:" << std::endl;
     for (int i = 0; i < cols * rows; ++i) {
       std::cout << (unsigned int)resPar[i] << " ";
     }
     std::cout << std::endl;
+    std::cout << "Sequential result:" << std::endl;
     for (int i = 0; i < cols* rows; ++i) {
       std::cout << (unsigned int)resSeq[i] << " ";
     }
@@ -78,24 +74,22 @@ TEST(Horizontal_Gauss_MPI, Test_Image_10_rows_5_cols) {
   constexpr int rows{ 10 };
   constexpr int cols{ 5 };
 
-  std::vector<unsigned char> src;
+  std::vector<unsigned char> src = getRandomImage(cols, rows);;
   std::vector<unsigned char> resPar;
   std::vector<unsigned char> resSeq;
-
-  if (rank == 0) {
-    src = getRandomImage(cols, rows);
-  }
 
   resPar = filterImageParallel(src, rows, cols);
 
   if (rank == 0) {
     resSeq = filterImageSequential(src, rows, cols);
 #ifdef DEBUG
+    std::cout << "Parallel result:" << std::endl;
     for (int i = 0; i < cols * rows; ++i) {
       std::cout << (unsigned int)resPar[i] << " ";
       if ((i + 1) % cols == 0) std::cout << std::endl;
   }
     std::cout << std::endl;
+    std::cout << "Sequential result:" << std::endl;
     for (int i = 0; i < cols* rows; ++i) {
       std::cout << (unsigned int)resSeq[i] << " ";
       if ((i + 1) % cols == 0) std::cout << std::endl;
@@ -113,24 +107,22 @@ TEST(Horizontal_Gauss_MPI, Test_Image_8_rows_11_cols) {
   constexpr int rows{ 8 };
   constexpr int cols{ 11 };
 
-  std::vector<unsigned char> src;
+  std::vector<unsigned char> src = getRandomImage(cols, rows);;
   std::vector<unsigned char> resPar;
   std::vector<unsigned char> resSeq;
-
-  if (rank == 0) {
-    src = getRandomImage(cols, rows);
-  }
 
   resPar = filterImageParallel(src, rows, cols);
 
   if (rank == 0) {
     resSeq = filterImageSequential(src, rows, cols);
 #ifdef DEBUG
+    std::cout << "Parallel result:" << std::endl;
     for (int i = 0; i < cols * rows; ++i) {
       std::cout << (unsigned int)resPar[i] << " ";
       if ((i + 1) % cols == 0) std::cout << std::endl;
     }
     std::cout << std::endl;
+    std::cout << "Sequential result:" << std::endl;
     for (int i = 0; i < cols* rows; ++i) {
       std::cout << (unsigned int)resSeq[i] << " ";
       if ((i + 1) % cols == 0) std::cout << std::endl;
@@ -149,24 +141,22 @@ TEST(Horizontal_Gauss_MPI, Test_Image_16_rows_1_cols) {
   constexpr int rows{ 16 };
   constexpr int cols{ 1 };
 
-  std::vector<unsigned char> src;
+  std::vector<unsigned char> src = getRandomImage(cols, rows);;
   std::vector<unsigned char> resPar;
   std::vector<unsigned char> resSeq;
-
-  if (rank == 0) {
-    src = getRandomImage(cols, rows);
-  }
 
   resPar = filterImageParallel(src, rows, cols);
 
   if (rank == 0) {
     resSeq = filterImageSequential(src, rows, cols);
 #ifdef DEBUG
+    std::cout << "Parallel result:" << std::endl;
     for (int i = 0; i < cols * rows; ++i) {
       std::cout << (unsigned int)resPar[i] << " ";
       if ((i + 1) % cols == 0) std::cout << std::endl;
     }
     std::cout << std::endl;
+    std::cout << "Sequential result:" << std::endl;
     for (int i = 0; i < cols* rows; ++i) {
       std::cout << (unsigned int)resSeq[i] << " ";
       if ((i + 1) % cols == 0) std::cout << std::endl;
@@ -177,43 +167,71 @@ TEST(Horizontal_Gauss_MPI, Test_Image_16_rows_1_cols) {
   }
 }
 
-//  TEST(Horizontal_Gauss_MPI, Test_Image_100_rows_100_cols) {
-//  int rank;
-//  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+TEST(Horizontal_Gauss_MPI, Test_Image_1_rows_16_cols) {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  constexpr int rows{ 16 };
+  constexpr int cols{ 1 };
+
+  std::vector<unsigned char> src = getRandomImage(cols, rows);;
+  std::vector<unsigned char> resPar;
+  std::vector<unsigned char> resSeq;
+
+  resPar = filterImageParallel(src, rows, cols);
+
+  if (rank == 0) {
+    resSeq = filterImageSequential(src, rows, cols);
+#ifdef DEBUG
+    std::cout << "Parallel result:" << std::endl;
+    for (int i = 0; i < cols * rows; ++i) {
+      std::cout << (unsigned int)resPar[i] << " ";
+      if ((i + 1) % cols == 0) std::cout << std::endl;
+    }
+    std::cout << std::endl;
+    std::cout << "Sequential result:" << std::endl;
+    for (int i = 0; i < cols* rows; ++i) {
+      std::cout << (unsigned int)resSeq[i] << " ";
+      if ((i + 1) % cols == 0) std::cout << std::endl;
+    }
+#endif  // DEBUG
+
+    ASSERT_EQ(resPar, resSeq);
+  }
+}
+
+// TEST(Horizontal_Gauss_MPI, Test_Image_500_rows_500_cols) {
+// int rank;
+// MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 //
-//  constexpr int rows{ 100 };
-//  constexpr int cols{ 100 };
+// constexpr int rows{ 500 };
+// constexpr int cols{ 500 };
 //
-//  std::vector<unsigned char> src;
-//  std::vector<unsigned char> resPar;
-//  std::vector<unsigned char> resSeq;
+// std::vector<unsigned char> src  = getRandomImage(cols, rows);;
+// std::vector<unsigned char> resPar;
+// std::vector<unsigned char> resSeq;
 //
-//  if (rank == 0) {
-//    src = getRandomImage(cols, rows);
-//  }
+// double parTime1 = MPI_Wtime();
+// resPar = filterImageParallel(src, cols, rows);
+// double parTime2 = MPI_Wtime();
 //
-//  double parTime1 = MPI_Wtime();
-//  resPar = filterImageParallel(src, cols, rows);
-//  double parTime2 = MPI_Wtime();
-//
-//  if (rank == 0) {
-//    double seqTime1 = MPI_Wtime();
-//    resSeq = filterImageSequential(src, cols, rows);
-//    double seqTime2 = MPI_Wtime();
+// if (rank == 0) {
+//   double seqTime1 = MPI_Wtime();
+//   resSeq = filterImageSequential(src, cols, rows);
+//   double seqTime2 = MPI_Wtime();
 // #ifdef DEBUG
-//    for (int i = 0; i < cols * rows; ++i) {
-//      std::cout << (unsigned int)resPar[i] << " ";
-//    }
-//    std::cout << std::endl;
-//    for (int i = 0; i < cols* rows; ++i) {
-//      std::cout << (unsigned int)resSeq[i] << " ";
-//    }
+//   for (int i = 0; i < cols * rows; ++i) {
+//     std::cout << (unsigned int)resPar[i] << " ";
+//   }
+//   std::cout << std::endl;
+//   for (int i = 0; i < cols* rows; ++i) {
+//     std::cout << (unsigned int)resSeq[i] << " ";
+//   }
 // #endif  // DEBUG
-//    std::cout << "ParTime " << parTime2 - parTime1 << std::endl;
-//    std::cout << "SeqTime " << seqTime2 - seqTime1 << std::endl;
-//
-//    ASSERT_EQ(resPar, resSeq);
-//  }
+//   std::cout << "ParTime " << parTime2 - parTime1 << std::endl;
+//   std::cout << "SeqTime " << seqTime2 - seqTime1 << std::endl;
+//   ASSERT_EQ(resPar, resSeq);
+// }
 // }
 
 int main(int argc, char** argv) {

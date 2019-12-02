@@ -56,10 +56,10 @@ std::vector<unsigned char> filterImageParallel(std::vector<unsigned char> source
   int comm_size, rank;
   MPI_Status status;
 
+  std::vector<unsigned char> globalResult(cols * rows);
+
   MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-  std::vector<unsigned char> globalResult(cols * rows);
 
   if (rows < comm_size) {
     return filterImageSequential(source, rows, cols);
