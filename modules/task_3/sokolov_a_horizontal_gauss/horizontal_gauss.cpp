@@ -124,7 +124,7 @@ std::vector<unsigned char> filterImageParallel(std::vector<unsigned char> source
 #endif  // DEBUG
   }
 
-  if (rank == comm_size - 1) {
+  if (rank == comm_size - 1 && comm_size != 1) {
     for (int i = 1; i < interval + 1; ++i)
       for (int j = 0; j < cols; ++j)
         localResult[(i - 1) * cols + j] = changePixel(localImage, i, j, interval + 1, cols);
