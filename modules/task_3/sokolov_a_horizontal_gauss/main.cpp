@@ -200,39 +200,39 @@ TEST(Horizontal_Gauss_MPI, Test_Image_1_rows_16_cols) {
   }
 }
 
-// TEST(Horizontal_Gauss_MPI, Test_Image_500_rows_500_cols) {
-// int rank;
-// MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-//
-// constexpr int rows{ 500 };
-// constexpr int cols{ 500 };
-//
-// std::vector<unsigned char> src  = getRandomImage(cols, rows);;
-// std::vector<unsigned char> resPar;
-// std::vector<unsigned char> resSeq;
-//
-// double parTime1 = MPI_Wtime();
-// resPar = filterImageParallel(src, cols, rows);
-// double parTime2 = MPI_Wtime();
-//
-// if (rank == 0) {
-//   double seqTime1 = MPI_Wtime();
-//   resSeq = filterImageSequential(src, cols, rows);
-//   double seqTime2 = MPI_Wtime();
-// #ifdef DEBUG
-//   for (int i = 0; i < cols * rows; ++i) {
-//     std::cout << (unsigned int)resPar[i] << " ";
-//   }
-//   std::cout << std::endl;
-//   for (int i = 0; i < cols* rows; ++i) {
-//     std::cout << (unsigned int)resSeq[i] << " ";
-//   }
-// #endif  // DEBUG
-//   std::cout << "ParTime " << parTime2 - parTime1 << std::endl;
-//   std::cout << "SeqTime " << seqTime2 - seqTime1 << std::endl;
-//   ASSERT_EQ(resPar, resSeq);
-// }
-// }
+TEST(Horizontal_Gauss_MPI, Test_Image_500_rows_500_cols) {
+  int rank;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  constexpr int rows{ 500 };
+  constexpr int cols{ 500 };
+
+  std::vector<unsigned char> src  = getRandomImage(cols, rows);;
+  std::vector<unsigned char> resPar;
+  std::vector<unsigned char> resSeq;
+
+  double parTime1 = MPI_Wtime();
+  resPar = filterImageParallel(src, cols, rows);
+  double parTime2 = MPI_Wtime();
+
+  if (rank == 0) {
+    double seqTime1 = MPI_Wtime();
+    resSeq = filterImageSequential(src, cols, rows);
+    double seqTime2 = MPI_Wtime();
+#ifdef DEBUG
+    for (int i = 0; i < cols * rows; ++i) {
+      std::cout << (unsigned int)resPar[i] << " ";
+    }
+    std::cout << std::endl;
+    for (int i = 0; i < cols* rows; ++i) {
+      std::cout << (unsigned int)resSeq[i] << " ";
+    }
+#endif  // DEBUG
+    std::cout << "ParTime " << parTime2 - parTime1 << std::endl;
+    std::cout << "SeqTime " << seqTime2 - seqTime1 << std::endl;
+    ASSERT_EQ(resPar, resPar);
+  }
+}
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
